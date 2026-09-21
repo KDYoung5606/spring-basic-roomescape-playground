@@ -30,7 +30,7 @@ public class ReservationController {
 
     @GetMapping("/reservations-mine")
     public List<MyReservationResponse> myReservations(LoginMember loginMember) {
-        return reservationService.findMine(loginMember);
+        return reservationService.findMyReservations(loginMember);
     }
 
     @PostMapping("/reservations")

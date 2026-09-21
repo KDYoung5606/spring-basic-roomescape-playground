@@ -10,8 +10,10 @@ import roomescape.theme.Theme;
 import roomescape.theme.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
+import roomescape.waiting.WaitingRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ReservationService {
@@ -19,20 +21,29 @@ public class ReservationService {
     private final TimeRepository timeRepository;
     private final ThemeRepository themeRepository;
     private final MemberRepository memberRepository;
+    private final WaitingRepository waitingRepository;
 
     public ReservationService(ReservationRepository reservationRepository,
                               TimeRepository timeRepository,
                               ThemeRepository themeRepository,
-                              MemberRepository memberRepository) {
+                              MemberRepository memberRepository,
+                              WaitingRepository waitingRepository) {
         this.reservationRepository = reservationRepository;
         this.timeRepository = timeRepository;
         this.themeRepository = themeRepository;
         this.memberRepository = memberRepository;
+        this.waitingRepository = waitingRepository;
     }
 
     public ReservationResponse save(ReservationRequest request, LoginMember loginMember) {
-        Time time = timeRepository.findById(request.getTime()).orElseThrow();
-        Theme theme = themeRepository.findById(request.getTheme()).orElseThrow();
+        Time time = timeRepository.findById(request.getTime())
+                .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND));
+        Theme theme = themeRepository.findById(request.getTheme())
+                .orElseThrow(() -> new BusinessException(ErrorCode.THEME_NOT_FOUND));
+        if (reservationRepository.existsByDateAndTimeIdAndThemeId(
+                request.getDate(), request.getTime(), request.getTheme())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_RESERVATION);
+        }
         Reservation reservation = reservationRepository.save(
                 createReservation(request, loginMember, time, theme));
         return new ReservationResponse(reservation.getId(), reserverName(reservation),
@@ -59,8 +70,8 @@ public class ReservationService {
                 .toList();
     }
 
-    public List<MyReservationResponse> findMine(LoginMember loginMember) {
-        return reservationRepository.findByMemberId(loginMember.getId()).stream()
+    public List<MyReservationResponse> findMyReservations(LoginMember loginMember) {
+        List<MyReservationResponse> reservations = reservationRepository.findByMemberId(loginMember.getId()).stream()
                 .map(it -> new MyReservationResponse(
                         it.getId(),
                         it.getTheme().getName(),
@@ -68,6 +79,15 @@ public class ReservationService {
                         it.getTime().getValue(),
                         it.getStatus().getLabel()))
                 .toList();
+        List<MyReservationResponse> waitings = waitingRepository.findWaitingsWithRankByMemberId(loginMember.getId()).stream()
+                .map(it -> new MyReservationResponse(
+                        it.getWaiting().getId(),
+                        it.getWaiting().getTheme().getName(),
+                        it.getWaiting().getDate(),
+                        it.getWaiting().getTime().getValue(),
+                        (it.getRank() + 1) + "번째 " + ReservationStatus.WAITING.getLabel()))
+                .toList();
+        return Stream.concat(reservations.stream(), waitings.stream()).toList();
     }
 
     private String reserverName(Reservation reservation) {

@@ -1,10 +1,14 @@
 package roomescape.reservation;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
 
@@ -16,9 +20,14 @@ public class Reservation {
     private String name;
     private String date;
     @ManyToOne
+    private Member member;
+    @ManyToOne
     private Time time;
     @ManyToOne
     private Theme theme;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, columnDefinition = "varchar(255) default 'RESERVED'")
+    private ReservationStatus status = ReservationStatus.RESERVED;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
         this.id = id;
@@ -35,6 +44,14 @@ public class Reservation {
         this.theme = theme;
     }
 
+    public Reservation(Member member, String date, Time time, Theme theme) {
+        this.member = member;
+        this.name = "";
+        this.date = date;
+        this.time = time;
+        this.theme = theme;
+    }
+
     public Reservation() {
 
     }
@@ -45,6 +62,14 @@ public class Reservation {
 
     public String getName() {
         return name;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
     }
 
     public String getDate() {

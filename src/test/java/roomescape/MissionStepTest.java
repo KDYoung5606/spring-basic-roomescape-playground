@@ -8,9 +8,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import roomescape.reservation.MyReservationResponse;
 import roomescape.reservation.ReservationResponse;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,5 +138,20 @@ public class MissionStepTest {
                 .when().get("/admin")
                 .then().log().all()
                 .statusCode(200);
+    }
+
+    @Test
+    @DisplayName("로그인한 회원이 내 예약 목록을 조회하면 본인이 예약한 예약만 조회된다")
+    void test_로그인한_회원의_내_예약_목록_조회() {
+        String adminToken = createToken("admin@email.com", "password");
+
+        List<MyReservationResponse> reservations = RestAssured.given().log().all()
+                .cookie("token", adminToken)
+                .get("/reservations-mine")
+                .then().log().all()
+                .statusCode(200)
+                .extract().jsonPath().getList(".", MyReservationResponse.class);
+
+        assertThat(reservations).hasSize(3);
     }
 }

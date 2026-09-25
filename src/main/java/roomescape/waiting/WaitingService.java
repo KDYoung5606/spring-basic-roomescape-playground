@@ -1,6 +1,7 @@
 package roomescape.waiting;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import roomescape.exception.BusinessException;
 import roomescape.exception.ErrorCode;
 import roomescape.member.LoginMember;
@@ -33,6 +34,7 @@ public class WaitingService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public WaitingResponse save(WaitingRequest request, LoginMember loginMember) {
         Time time = timeRepository.findById(request.getTime())
                 .orElseThrow(() -> new BusinessException(ErrorCode.TIME_NOT_FOUND));

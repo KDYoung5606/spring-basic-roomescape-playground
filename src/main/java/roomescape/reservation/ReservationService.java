@@ -89,7 +89,7 @@ public class ReservationService {
                         it.getWaiting().getTheme().getName(),
                         it.getWaiting().getDate(),
                         it.getWaiting().getTime().getValue(),
-                        (it.getRank() + 1) + "번째 " + ReservationStatus.WAITING.getLabel()))
+                        (it.getRank() + 1) + "번째 예약대기"))
                 .toList();
         return Stream.concat(reservations.stream(), waitings.stream()).toList();
     }

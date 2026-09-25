@@ -1,4 +1,4 @@
-package roomescape.theme;
+package roomescape.theme.controller.dto;
 
 public class ThemeRequest {
     private String name;

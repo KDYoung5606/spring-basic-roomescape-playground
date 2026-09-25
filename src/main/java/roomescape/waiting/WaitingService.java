@@ -8,9 +8,9 @@ import roomescape.member.LoginMember;
 import roomescape.member.Member;
 import roomescape.member.MemberRepository;
 import roomescape.reservation.Reservation;
-import roomescape.reservation.ReservationRepository;
+import roomescape.reservation.repository.ReservationRepository;
 import roomescape.theme.Theme;
-import roomescape.theme.ThemeRepository;
+import roomescape.theme.repository.ThemeRepository;
 import roomescape.time.Time;
 import roomescape.time.TimeRepository;
 

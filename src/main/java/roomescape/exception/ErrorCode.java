@@ -9,6 +9,7 @@ public enum ErrorCode {
     LOGIN_FAILED(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 올바르지 않습니다."),
     MEMBER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "회원이 존재하지 않습니다."),
     BLANK_TIME(HttpStatus.BAD_REQUEST, "시간 값은 필수입니다."),
+    BLANK_THEME(HttpStatus.BAD_REQUEST, "테마 값은 필수입니다."),
     BLANK_RESERVATION(HttpStatus.BAD_REQUEST, "날짜, 테마, 시간은 필수입니다."),
     BLANK_WAITING(HttpStatus.BAD_REQUEST, "날짜, 테마, 시간은 필수입니다."),
     DUPLICATE_RESERVATION(HttpStatus.BAD_REQUEST, "이미 예약된 시간입니다."),

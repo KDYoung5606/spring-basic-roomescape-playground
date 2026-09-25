@@ -9,6 +9,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import roomescape.exception.BusinessException;
+import roomescape.exception.ErrorCode;
 import roomescape.member.Member;
 import roomescape.theme.Theme;
 import roomescape.time.Time;
@@ -33,6 +35,7 @@ public class Reservation {
     private ReservationStatus status = ReservationStatus.RESERVED;
 
     public Reservation(Long id, String name, String date, Time time, Theme theme) {
+        validateRequired(time, theme);
         this.id = id;
         this.name = name;
         this.date = date;
@@ -41,6 +44,7 @@ public class Reservation {
     }
 
     public Reservation(String name, String date, Time time, Theme theme) {
+        validateRequired(time, theme);
         this.name = name;
         this.date = date;
         this.time = time;
@@ -48,6 +52,7 @@ public class Reservation {
     }
 
     public Reservation(Member member, String date, Time time, Theme theme) {
+        validateRequired(time, theme);
         this.member = member;
         this.name = "";
         this.date = date;
@@ -57,6 +62,15 @@ public class Reservation {
 
     public Reservation() {
 
+    }
+
+    private static void validateRequired(Time time, Theme theme) {
+        if (time == null) {
+            throw new BusinessException(ErrorCode.BLANK_TIME);
+        }
+        if (theme == null) {
+            throw new BusinessException(ErrorCode.BLANK_THEME);
+        }
     }
 
     public Long getId() {

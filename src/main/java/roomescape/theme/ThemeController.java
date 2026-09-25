@@ -20,8 +20,8 @@ public class ThemeController {
     }
 
     @PostMapping("/themes")
-    public ResponseEntity<Theme> createTheme(@RequestBody Theme theme) {
-        Theme newTheme = themeRepository.save(theme);
+    public ResponseEntity<Theme> createTheme(@RequestBody ThemeRequest request) {
+        Theme newTheme = themeRepository.save(new Theme(request.getName(), request.getDescription()));
         return ResponseEntity.created(URI.create("/themes/" + newTheme.getId())).body(newTheme);
     }
 
